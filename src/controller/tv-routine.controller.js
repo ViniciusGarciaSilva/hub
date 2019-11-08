@@ -1,11 +1,25 @@
 const tvRoutineData = require('../data/tv-routine.data')
 const fs = require("fs")
 
-async function setLog(log, date) {
-  const logParsed = logParse(log, date)
+async function checkRoutine(date) {
+  const period = parseDate(date)
   try {
-    const routine = await tvRoutineData.set(logParsed)
+    const routine = await tvRoutineData.get(period)
     return routine
+  }
+  catch {
+    return []
+  }
+}
+exports.checkRoutine = checkRoutine
+
+async function setLog(log, date) {
+  const period = parseDate(date)
+  const cleanLog = clearLog(log)
+  const data = period + cleanLog
+  try {
+    const response = await tvRoutineData.set(data)
+    return response
   }
   catch {
     return []  
@@ -13,7 +27,7 @@ async function setLog(log, date) {
 }
 exports.setLog = setLog
 
-function logParse(log, date) {
+function parseDate(date) {
   let start = new Date(date)
   let end = new Date(date)
   date.getTimezoneOffset() === 120 ? start.setHours(1) : start.setHours(0) // SUMMER TIME
@@ -26,7 +40,10 @@ function logParse(log, date) {
   end.setMilliseconds(59)
   let period = start.toString() + ',' + end.toString() + '\n'
   console.log('period: ', period)
+  return period
+}
+
+function clearLog(log) {
   let cleanLog = log.replace(/ /g, ",")
-  fs.writeFileSync('output.txt', period + cleanLog)
-  return period + cleanLog
+  return cleanLog
 }
