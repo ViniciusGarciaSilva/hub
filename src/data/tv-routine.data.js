@@ -25,7 +25,7 @@ exports.set = set
 async function get(period) {
   try {
     // const response = await axios('https://tv-routine.herokuapp.com/routine', {period: period})
-    const response = await axios.post(`http://localhost:5000/routine`, {period: period})
+    const response = await axios.post(`http://localhost:5000/routine`, {period: period}) // TODO: change to remote server
     return response.data
   }
   catch {

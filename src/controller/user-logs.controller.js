@@ -7,6 +7,7 @@ async function getLog(date) {
     return response
   }
   catch {
+    console.log(response)
     return []
   }
 }

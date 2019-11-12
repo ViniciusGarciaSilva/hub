@@ -10,3 +10,4 @@ const channels = {
   NET_VOLUMEUP = 'http://blynk-cloud.com/d4db66384f834125a702a9c8f200cfa2/update/V3?value=volmais',
   NET_MUTE = 'http://blynk-cloud.com/d4db66384f834125a702a9c8f200cfa2/update/V3?value=mute'
 }
+exports.channels = channels
