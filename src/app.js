@@ -1,4 +1,4 @@
-const userLogsController = require('./controller/user-logs.controller')
+const irModuleController = require('./controller/ir-module.controller')
 const tvRoutineController = require('./controller/tv-routine.controller')
 const boxController = require('./controller/box.controller')
 const fs = require("fs")
@@ -13,7 +13,7 @@ function dailyLogs(time) {
   cron.schedule(`0 0 * * *`, async () => {
     let yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
-    const logs = await userLogsController.getLog(yesterday)
+    const logs = await irModuleController.getLog(yesterday)
     console.log('Yesterday logs: \n', logs)
     const response = await tvRoutineController.setLog(logs, new Date(1569628947000)) // TODO: CHANGE
     console.log(response.status)
@@ -125,8 +125,15 @@ async function remove() {
   console.log(response)
 }
 
+async function teste() {
+  const response = await irModuleController.sendCommand('globo')
+  console.log(response)
+}
+
 // dailyLogs()
 // checkRoutine()
+
+teste()
 
 // checkBox()
 // setAlerts()
