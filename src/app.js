@@ -1,6 +1,8 @@
 const tvModule = require('./modules/tv.module')
 const medicineModule = require('./modules/medicine.module')
 
+medicineModule.main()
+
 // tvModule.dailyLogs()
 // tvModule.checkRoutine()
 // tvModule.teste()

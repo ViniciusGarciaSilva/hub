@@ -1,4 +1,17 @@
 const boxData = require('../data/box.data')
+const localLogsData = require('../data/local-logs.data')
+
+async function readLocalLogs() {
+  try {
+    const logs = await localLogsData.read()
+    return logs
+  }
+  catch (err) {
+    console.log(err)
+    return []
+  }
+}
+exports.readLocalLogs = readLocalLogs
 
 async function checkSensor() {
   try {
