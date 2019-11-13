@@ -1,6 +1,8 @@
 const boxData = require('../data/box.data')
 const localLogsData = require('../data/local-logs.data')
 
+// TODO: criar uma camada para diferenciar http request de chamadas normais da aplicação
+
 async function readLocalLogs() {
   try {
     const logs = await localLogsData.read()
@@ -12,6 +14,66 @@ async function readLocalLogs() {
   }
 }
 exports.readLocalLogs = readLocalLogs
+
+async function setLocalLogs(req, res, next) {
+  const dose = req.body
+  try {
+    await localLogsData.set(dose)
+    res.status(200).send('Success!');
+  }
+  catch (err) {
+    res.status(200).send(err)
+  }
+}
+exports.setLocalLogs = setLocalLogs
+
+async function setLocalLogs(req, res, next) {
+  const dose = req.body
+  try {
+    await localLogsData.set(dose)
+    res.status(200).send('Success!');
+  }
+  catch (err) {
+    res.status(200).send(err)
+  }
+}
+exports.setLocalLogs = setLocalLogs
+
+async function updateLocalLogs(req, res, next) {
+  const dose = req.body
+  try {
+    await localLogsData.update(dose)
+    res.status(200).send('Success!');
+  }
+  catch (err) {
+    res.status(200).send(err)
+  }
+}
+exports.updateLocalLogs = updateLocalLogs
+
+async function deleteLocalLogs(req, res, next) {
+  const dose = req.body
+  try {
+    await localLogsData.erase(dose)
+    res.status(200).send('Success!');
+  }
+  catch (err) {
+    res.status(200).send(err)
+  }
+}
+exports.deleteLocalLogs = deleteLocalLogs
+
+async function setLocalLogs(req, res, next) {
+  const dose = req.body
+  try {
+    await localLogsData.set(dose)
+    res.status(200).send('Success!');
+  }
+  catch (err) {
+    res.status(200).send(err)
+  }
+}
+exports.setLocalLogs = setLocalLogs
 
 async function checkSensor() {
   try {
