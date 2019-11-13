@@ -5,9 +5,11 @@ async function checkRoutine(date) {
   const period = parseDate(date)
   try {
     const routine = await tvRoutineData.get(period)
+    routine.filter(element => element.channel !== 0)
     return routine
   }
   catch {
+    console.log(routine)
     return []
   }
 }

@@ -1,5 +1,6 @@
 const axios = require('axios')
 const fs = require('fs')
+const commands = require('../model/commands.model')
 
 async function get(date) {
   try {
@@ -14,6 +15,18 @@ async function get(date) {
   }
 }
 exports.get = get
+
+async function set(link) {
+  try {
+    const response = axios.get(`${link}`)
+    return response
+  }
+  catch {
+    return response
+  }
+}
+exports.set = set
+
 const logsMock = 
 '1569628947 IRRX 3772793023\n'+
 '1569628970 RFRX 11476633\n'+

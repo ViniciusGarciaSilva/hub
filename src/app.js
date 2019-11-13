@@ -1,4 +1,4 @@
-const userLogsController = require('./controller/user-logs.controller')
+const irModuleController = require('./controller/ir-module.controller')
 const tvRoutineController = require('./controller/tv-routine.controller')
 const boxController = require('./controller/box.controller')
 const fs = require("fs")
@@ -7,12 +7,13 @@ const box = require('./model/mock') // TODO: criar log local e sincronizar com o
 
 let sensorLog = [1, 1, 1, 1, 1, 1, 1, 1]
 let alerts = []
+let todayRoutine = []
 
 function dailyLogs(time) {
   cron.schedule(`0 0 * * *`, async () => {
     let yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
-    const logs = await userLogsController.getLog(yesterday)
+    const logs = await irModuleController.getLog(yesterday)
     console.log('Yesterday logs: \n', logs)
     const response = await tvRoutineController.setLog(logs, new Date(1569628947000)) // TODO: CHANGE
     console.log(response.status)
@@ -23,8 +24,27 @@ async function checkRoutine() {
   let today = new Date()
   const routine = await tvRoutineController.checkRoutine(new Date(1569628947000)) // TODO: CHANGE
   console.log('Routine: ', routine)
-  // TODO: enviar isso para o módulo IR.
-  return response
+  todayRoutine = routine
+  for (let i = 0; i < todayRoutine.length; i++) {
+    setTodayRoutine(todayRoutine[i].date)
+  }
+  return routine
+}
+
+async function setTodayRoutine(dateString) {
+  const date = new Date(dateString)
+  if (date.getTimezoneOffset() === 120) { // SUMMER TIME
+    date.setHours(date.getHours() - 1)
+  }
+  const now = new Date()
+  if (date.getTimezoneOffset() === 120) { // SUMMER TIME
+    now.setHours(now.getHours() - 1)
+  }
+  const millisTill = date.getTime() - now.getTime()
+  console.log(millisTill)
+  if(millisTill>0) {
+    setTimeout(() => {console.log('oi')}, millisTill)
+  }
 }
 
 async function setAlerts() {
@@ -95,7 +115,7 @@ async function update() {
     timeOfDay: "10:12:23",
     alertLevel: 1,
     criticality: 2
-}
+  }
   const response = await boxController.updateMedicine(medicineTest)
   console.log(response)
 }
@@ -105,8 +125,16 @@ async function remove() {
   console.log(response)
 }
 
-// setTimeout(dailyLogs, 300000)
+async function teste() {
+  const response = await irModuleController.sendCommand('globo')
+  console.log(response)
+}
+
 // dailyLogs()
+// checkRoutine()
+
+teste()
+
 // checkBox()
 // setAlerts()
 
