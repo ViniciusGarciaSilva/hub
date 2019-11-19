@@ -89,3 +89,8 @@ async function remove() {
   console.log(response)
 }
 exports.remove = remove
+
+async function main() {
+  const logs = await boxController.readLocalLogs()
+} 
+exports.main = main
