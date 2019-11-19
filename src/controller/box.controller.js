@@ -17,6 +17,7 @@ exports.readLocalLogs = readLocalLogs
 
 async function setLocalLogs(req, res, next) {
   const dose = req.body
+  console.log(dose)
   try {
     await localLogsData.set(dose)
     res.status(200).send('Success!');
