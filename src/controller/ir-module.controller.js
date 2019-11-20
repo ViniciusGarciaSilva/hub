@@ -3,7 +3,7 @@ const commands = require('../model/commands.model')
 
 async function sendCommand(command) {
   try {
-    let newCommand = command
+    let newCommand = command.toLowerCase()
     if (commands.channels.hasOwnProperty(newCommand)) {
       newCommand = commands.channels[newCommand]
     }
@@ -11,7 +11,7 @@ async function sendCommand(command) {
       await irModuleData.set(commands.links[newCommand])
       return 'Comando ' + newCommand + ' executado com sucesso'  
     } else {
-      throw new Error('Comando inválido');
+      throw new Error('Comando inválido: ', command);
     }
   }
   catch (error) {
