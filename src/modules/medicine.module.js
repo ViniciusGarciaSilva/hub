@@ -1,9 +1,12 @@
 const boxController = require('../controller/box.controller')
+const boxData = require('../data/box.data')
 const cron = require("node-cron")
 const box = require('../model/mock') // TODO: criar log local e sincronizar com o banco
 
 let sensorLog = [1, 1, 1, 1, 1, 1, 1, 1]
 let alerts = []
+let unfinishedRemedies = []
+exports.unfinishedRemedies = unfinishedRemedies
 
 async function setAlerts() {
   box.box.forEach((event) => {
@@ -22,17 +25,29 @@ exports.setAlerts = setAlerts
 
 async function checkBox() {
   cron.schedule("*/1 * * * * *", async () => {
-    const sensor = await boxController.checkSensor()
-    sensor.forEach(async (sensor, index) => {
+    // const sensors = await boxController.checkSensor() // todo
+    console.log('here')
+    const sensors = [1,2,1,1,1,1,1]
+    const logs = await boxController.readLocalLogs()
+    sensors.forEach(async (sensor, index) => {
       if (sensor !== sensorLog[index]) {
         console.log('identificou mudanca no sensor: ', index)
+        sensorLog[index] = sensor
         if (sensor == '2') {
           console.log('abertura')
+          let log = logs.find(log => log.box == index)
           let alert = alerts.find(alert => alert.box == index)
-          console.log(alert)
           if (alert) {
             console.log('achou alerta')
-            rele = await boxController.setSignal(index, '1', alert.level)
+            rele = await boxController.setSignal(index, '1', alert.level) 
+          } else if (!log){
+            //Ativar daiarogufurou
+            console.log('adicionando ao unfinished remedies')
+            unfinishedRemedies.push({
+              id:"100",name:"",weekday:"",box: `${index}`,timeOfDay:"",alertLevel:"",criticality:""
+            })
+            console.log('Inicio conversa')
+            // await boxData.nluCreateRemedy();
           }
           // TODO: seta remedio como tomado
         }
@@ -91,6 +106,12 @@ async function remove() {
 exports.remove = remove
 
 async function main() {
-  const logs = await boxController.readLocalLogs()
+  // const logs = await boxController.readLocalLogs()
+  checkBox();
 } 
 exports.main = main
+
+async function teste() {
+  await boxData.nluCreateRemedy();
+}
+exports.teste = teste

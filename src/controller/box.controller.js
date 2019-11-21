@@ -1,6 +1,6 @@
 const boxData = require('../data/box.data')
 const localLogsData = require('../data/local-logs.data')
-
+const boxModule = require('../modules/medicine.module')
 // TODO: criar uma camada para diferenciar http request de chamadas normais da aplicação
 
 async function readLocalLogs() {
@@ -16,20 +16,16 @@ async function readLocalLogs() {
 exports.readLocalLogs = readLocalLogs
 
 async function setLocalLogs(req, res, next) {
-  const dose = req.body
-  console.log(dose)
-  try {
-    await localLogsData.set(dose)
-    res.status(200).send('Success!');
+  let dose = req.body
+  console.log('dose: ', dose)
+  const unfineshedRemedies = boxModule.unfinishedRemedies
+  console.log('unfinished remedies: ', unfineshedRemedies)
+  if (unfineshedRemedies.length > 0) {
+    dose.id = unfineshedRemedies[0].id
+    dose.box = unfineshedRemedies[0].box
+    unfineshedRemedies.splice(0)
+    console.log('new', unfineshedRemedies)
   }
-  catch (err) {
-    res.status(200).send(err)
-  }
-}
-exports.setLocalLogs = setLocalLogs
-
-async function setLocalLogs(req, res, next) {
-  const dose = req.body
   try {
     await localLogsData.set(dose)
     res.status(200).send('Success!');
@@ -63,18 +59,6 @@ async function deleteLocalLogs(req, res, next) {
   }
 }
 exports.deleteLocalLogs = deleteLocalLogs
-
-async function setLocalLogs(req, res, next) {
-  const dose = req.body
-  try {
-    await localLogsData.set(dose)
-    res.status(200).send('Success!');
-  }
-  catch (err) {
-    res.status(200).send(err)
-  }
-}
-exports.setLocalLogs = setLocalLogs
 
 async function checkSensor() {
   try {

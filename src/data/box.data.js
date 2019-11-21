@@ -1,8 +1,26 @@
 const axios = require('axios')
+const newAgent = require('../newagent-16dd6-2707dae8696b.json');
+const dialogflow = require('dialogflow');
+const uuid = require('uuid');
+
+async function nluCreateRemedy() {
+  try {
+    await axios.post('https://d2496e03.ngrok.io/speaker/message', { // todo
+      "stt": "google",
+      "nlu": "dialog_flow",
+      "tts": "google",
+      "message": "Quero adicionar um remédio"
+    })
+  }
+  catch {
+    console.log('')
+  }
+}
+exports.nluCreateRemedy = nluCreateRemedy;
 
 async function getSensor() {
   try {
-    const response = await axios.get(`http://192.168.4.1/json?fields=sensor`)
+    const response = await axios.get(`http://192.168.1.105/json?fields=sensor`)
     return response.data.sensor
   }
   catch {
@@ -14,7 +32,7 @@ exports.getSensor = getSensor
 
 async function setSignal(signal, value) {
   try {
-    const response = await axios.get(`http://192.168.4.1/?r${signal}=${value}&fields=rele`)
+    const response = await axios.get(`http://192.168.1.105/?r${signal}=${value}&fields=rele`)
     return response.data.rele
   }
   catch {
@@ -37,7 +55,7 @@ exports.setAlert = setAlert
 
 async function create(medicines) {
   try {
-    const response = await axios.post('https://medicine-api-db.herokuapp.com/medicine',{data: medicines})
+    const response = await axios.post('https://medicine-api-db.herokuapp.com/medicine', { data: medicines })
     return response.data
   }
   catch {
@@ -69,8 +87,8 @@ async function read(id) {
 exports.read = read
 
 async function update(medicine) {
-  try { 
-    const response = await axios.put(`https://medicine-api-db.herokuapp.com/medicine/${medicine.id}`, {...medicine} )
+  try {
+    const response = await axios.put(`https://medicine-api-db.herokuapp.com/medicine/${medicine.id}`, { ...medicine })
     return response.data
   }
   catch {

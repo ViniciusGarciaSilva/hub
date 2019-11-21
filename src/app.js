@@ -18,6 +18,7 @@ app.use('/tv', require('./routes/tv.route'))
 const tvModule = require('./modules/tv.module')
 const medicineModule = require('./modules/medicine.module')
 
+// medicineModule.teste()
 medicineModule.main()
 
 // tvModule.dailyLogs()
