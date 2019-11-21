@@ -18,16 +18,17 @@ exports.readLocalLogs = readLocalLogs
 async function setLocalLogs(req, res, next) {
   let dose = req.body
   console.log('dose: ', dose)
-  const unfineshedRemedies = boxModule.unfinishedRemedies
-  console.log('unfinished remedies: ', unfineshedRemedies)
-  if (unfineshedRemedies.length > 0) {
-    dose.id = unfineshedRemedies[0].id
-    dose.box = unfineshedRemedies[0].box
-    unfineshedRemedies.splice(0)
-    console.log('new', unfineshedRemedies)
+  const unfinishedRemedies = boxModule.unfinishedRemedies
+  console.log('unfinished remedies: ', unfinishedRemedies)
+  if (unfinishedRemedies.length > 0) {
+    dose.id = unfinishedRemedies[unfinishedRemedies.length - 1] .id
+    dose.box = unfinishedRemedies[unfinishedRemedies.length - 1].box
+    unfinishedRemedies.splice(unfinishedRemedies.length - 1)
+    console.log('new', unfinishedRemedies)
   }
   try {
     await localLogsData.set(dose)
+    boxModule.createAlert(dose)
     res.status(200).send('Success!');
   }
   catch (err) {

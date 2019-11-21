@@ -20,7 +20,7 @@ exports.nluCreateRemedy = nluCreateRemedy;
 
 async function getSensor() {
   try {
-    const response = await axios.get(`http://192.168.1.105/json?fields=sensor`)
+    const response = await axios.get(`http://192.168.43.184/json?fields=sensor`)
     return response.data.sensor
   }
   catch {
@@ -32,7 +32,7 @@ exports.getSensor = getSensor
 
 async function setSignal(signal, value) {
   try {
-    const response = await axios.get(`http://192.168.1.105/?r${signal}=${value}&fields=rele`)
+    const response = await axios.get(`http://192.168.43.184/?r${signal}=${value}&fields=rele`)
     return response.data.rele
   }
   catch {

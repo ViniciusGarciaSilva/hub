@@ -39,7 +39,7 @@ exports.update = update
 
 async function erase(dose) {
   let logs = await read()
-  const logIndex = logs.findIndex(log => log.box === dose.box)
+  const logIndex = logs.findIndex(log => log.id === dose.id)
   if(logIndex !== undefined){
     logs.splice(logIndex, 1)
     await jsonfile.writeFile(localLogs, logs, function(err) {

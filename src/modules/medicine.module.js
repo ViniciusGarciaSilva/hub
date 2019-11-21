@@ -1,33 +1,40 @@
 const boxController = require('../controller/box.controller')
 const boxData = require('../data/box.data')
 const cron = require("node-cron")
-const box = require('../model/mock') // TODO: criar log local e sincronizar com o banco
+const localLogsData = require('../data/local-logs.data')
 
-let sensorLog = [1, 1, 1, 1, 1, 1, 1, 1]
+let sensorLog = [2, 2, 2, 2, 2, 2, 2, 2]
 let alerts = []
 let unfinishedRemedies = []
 exports.unfinishedRemedies = unfinishedRemedies
+let jobs = []
 
-async function setAlerts() {
-  box.box.forEach((event) => {
-    const time = event.timeOfDay.split(":")
-    cron.schedule(`${time[1]} ${time[0]} * * ${event.weekday}`, async () => {
-      // TODO: checar se o remedio ja foi tomado 
-      if (1) {
-        rele = await boxController.setSignal(event.box, 2, event.alertLevel)
-        alerts.push({ box: event.box, level: event.alertLevel })
-      }
-      console.log(event, rele)
-    }, { timezone: "America/Sao_Paulo" })
+async function createAlert(event) {
+  const time = event.timeOfDay.split(":")
+  console.log('setting cron job: ', time[0], time[1])
+  const job = cron.schedule(`${time[1]} ${time[0]} * * ${event.weekday}`, async () => {
+    // TODO: checar se o remedio ja foi tomado 
+    if (1) {
+      rele = await boxController.setSignal(event.box, 2, event.alertLevel)
+      alerts.push({ box: event.box, level: event.alertLevel })
+    }
+    console.log(event, rele)
+  }, { timezone: "America/Sao_Paulo" })
+  jobs[event.id] = job
+}
+exports.createAlert = createAlert
+
+async function initAlerts() {
+  const logs = await boxController.readLocalLogs()
+  logs.forEach((event) => {
+    createAlert(event)
   })
 }
-exports.setAlerts = setAlerts
+exports.setAlerts = initAlerts
 
 async function checkBox() {
   cron.schedule("*/1 * * * * *", async () => {
-    // const sensors = await boxController.checkSensor() // todo
-    console.log('here')
-    const sensors = [1,2,1,1,1,1,1]
+    const sensors = await boxController.checkSensor() // todo
     const logs = await boxController.readLocalLogs()
     sensors.forEach(async (sensor, index) => {
       if (sensor !== sensorLog[index]) {
@@ -39,15 +46,22 @@ async function checkBox() {
           let alert = alerts.find(alert => alert.box == index)
           if (alert) {
             console.log('achou alerta')
-            rele = await boxController.setSignal(index, '1', alert.level) 
-          } else if (!log){
+            rele = await boxController.setSignal(index, '1', alert.level)
+          }
+          if (!log) {
             //Ativar daiarogufurou
             console.log('adicionando ao unfinished remedies')
             unfinishedRemedies.push({
-              id:"100",name:"",weekday:"",box: `${index}`,timeOfDay:"",alertLevel:"",criticality:""
+              id: "100", name: "", weekday: "", box: `${index}`, timeOfDay: "", alertLevel: "", criticality: ""
             })
             console.log('Inicio conversa')
             // await boxData.nluCreateRemedy();
+          } else {
+            console.log('jobs ' + log.id + ': ' + jobs[log.id])
+            await localLogsData.erase(log)
+            if (jobs[log.id])
+              jobs.splice(log.id)[0].stop()
+            console.log('jobs ' + log.id + ': ' + jobs[log.id])
           }
           // TODO: seta remedio como tomado
         }
@@ -106,9 +120,9 @@ async function remove() {
 exports.remove = remove
 
 async function main() {
-  // const logs = await boxController.readLocalLogs()
+  initAlerts();
   checkBox();
-} 
+}
 exports.main = main
 
 async function teste() {
