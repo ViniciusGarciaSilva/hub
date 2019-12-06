@@ -5,7 +5,7 @@ const uuid = require('uuid');
 
 async function nluCreateRemedy() {
   try {
-    await axios.post('https://d2496e03.ngrok.io/speaker/message', { // todo
+    await axios.post('https://b7cbbc40.ngrok.io/speaker/message', { // todo
       "stt": "google",
       "nlu": "dialog_flow",
       "tts": "google",

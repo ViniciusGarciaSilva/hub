@@ -1,6 +1,7 @@
 const boxData = require('../data/box.data')
 const localLogsData = require('../data/local-logs.data')
 const boxModule = require('../modules/medicine.module')
+const moment = require('moment')
 // TODO: criar uma camada para diferenciar http request de chamadas normais da aplicação
 
 async function readLocalLogs() {
@@ -27,6 +28,7 @@ async function setLocalLogs(req, res, next) {
     console.log('new', unfinishedRemedies)
   }
   try {
+    dose.timeOfDay = moment(dose.timeOfDay).format('H:m:s')
     await localLogsData.set(dose)
     boxModule.createAlert(dose)
     res.status(200).send('Success!');
