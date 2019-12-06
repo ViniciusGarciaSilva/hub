@@ -16,6 +16,9 @@ exports.read = read
 
 async function set(dose) {
   let logs = await read()
+  if (dose.id === '') {
+    dose.id = logs.length - 1;
+  }
   logs.push(dose)
   await jsonfile.writeFile(localLogs, logs, function(err) {
     if (err) console.log(err)

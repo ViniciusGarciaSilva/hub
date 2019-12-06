@@ -9,6 +9,7 @@ var router = express1.default.Router()
 
 var boxController = require('../controller/box.controller')
 
+router.put('/attribute', boxController.updateAttributeLocalLogs)
 router.post('/', boxController.setLocalLogs);
 router.get('/', boxController.readLocalLogs);
 router.put('/', boxController.updateLocalLogs);

@@ -39,6 +39,20 @@ async function setLocalLogs(req, res, next) {
 }
 exports.setLocalLogs = setLocalLogs
 
+async function updateAttributeLocalLogs(req, res, next) {
+  const attribute = req.body.attribute;
+  const value = req.body.value;
+  try {
+    await localLogsData.updateAttribute(attribute, value);
+    res.status(200).send('Success!')
+  }
+  catch (err) {
+    console.log(err)
+    res.status(200).send(err);
+  }
+}
+exports.updateAttributeLocalLogs = updateAttributeLocalLogs;
+
 async function updateLocalLogs(req, res, next) {
   const dose = req.body
   try {
