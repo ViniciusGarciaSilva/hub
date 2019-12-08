@@ -1,27 +1,16 @@
 const axios = require('axios')
-const newAgent = require('../newagent-16dd6-2707dae8696b.json');
-const dialogflow = require('dialogflow');
-const uuid = require('uuid');
+const jsonfile = require('jsonfile')
 
-async function nluCreateRemedy() {
-  try {
-    await axios.post('https://b7cbbc40.ngrok.io/speaker/message', { // todo
-      "stt": "google",
-      "nlu": "dialog_flow",
-      "tts": "google",
-      "message": "Quero adicionar um remédio"
-    })
-  }
-  catch {
-    console.log('')
-  }
-}
-exports.nluCreateRemedy = nluCreateRemedy;
+const localLogs = './src/teste-local-logs.json'
 
 async function getSensor() {
   try {
-    const response = await axios.get(`http://192.168.43.184/json?fields=sensor`)
-    return response.data.sensor
+    
+    const bla = await jsonfile.readFile(localLogs)
+    //console.log(bla)
+    return bla.bla
+    //const response = await axios.get(`http://192.168.43.184/json?fields=sensor`)
+    //return response.data.sensor
   }
   catch {
     console.log('erro no request')

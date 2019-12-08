@@ -4,6 +4,9 @@ const boxModule = require('../modules/medicine.module')
 const moment = require('moment')
 // TODO: criar uma camada para diferenciar http request de chamadas normais da aplicação
 
+const unfinishedRemedies = []
+exports.unfinishedRemedies = unfinishedRemedies
+
 async function readLocalLogs() {
   try {
     const logs = await localLogsData.read()
@@ -19,7 +22,6 @@ exports.readLocalLogs = readLocalLogs
 async function setLocalLogs(req, res, next) {
   let dose = req.body
   console.log('dose: ', dose)
-  const unfinishedRemedies = boxModule.unfinishedRemedies
   console.log('unfinished remedies: ', unfinishedRemedies)
   if (unfinishedRemedies.length > 0) {
     dose.id = unfinishedRemedies[unfinishedRemedies.length - 1] .id
@@ -69,7 +71,7 @@ async function checkSensor() {
     return sensor
   }
   catch {
-    console.log('error')
+    console.log('error check sensor')
     return []
   }
 }
@@ -86,7 +88,7 @@ async function setSignal(signal, value, alert) {
     return rele  
   }
   catch {
-    console.log('error')
+    console.log('error set signal')
     return []
   }
 }
