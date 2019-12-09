@@ -17,7 +17,8 @@ exports.checkRoutine = checkRoutine
 
 async function setLog(log, date) {
   const period = parseDate(date)
-  const cleanLog = clearLog(log)
+  console.log(log)
+  const cleanLog = log.length > 0 ? clearLog(log) : []
   const data = period + cleanLog
   try {
     const response = await tvRoutineData.set(data)
@@ -46,6 +47,7 @@ function parseDate(date) {
 }
 
 function clearLog(log) {
+  console.log(log)
   let cleanLog = log.replace(/ /g, ",")
   return cleanLog
 }

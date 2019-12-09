@@ -8,8 +8,8 @@ async function set(log) {
         'Content-Type': 'text/plain'
       },
       method: 'post',
-      // url: 'https://tv-routine.herokuapp.com/converter/IA',
-      url: 'http://localhost:5000/converter/IA',
+      // url: 'https://tv-routine.herokuapp.com/converter/convert',
+      url: 'http://localhost:5000/converter/convert',
       responseType: 'text',
       data: log,
     })

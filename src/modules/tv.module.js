@@ -1,8 +1,31 @@
 const irModuleController = require('../controller/ir-module.controller')
 const tvRoutineController = require('../controller/tv-routine.controller')
+const simulationData = require('../data/simulation.data')
+const simulationMock = require('../simulation.test');
 const cron = require("node-cron")
+const papa = require('papaparse')
 
 let todayRoutine = []
+// TODO: APAGAR BANCO
+async function dailyLogsSimulation() {
+  const simulation = await simulationData.read()
+  let logs = simulationMock.logs
+  // const logs = simulation.date ? await irModuleController.getLog(simulation.date) : [] 
+  console.log('Simulation logs: \n', logs)
+  const logsParsed = papa.parse(logs).data
+  console.log('Papa parse: ', logsParsed)
+  const newLogs = logsParsed.map(log => {
+    let newLog = log
+    oldTimestamp = new Date(log[0]*1000).getTime() / 1000; // timestamp(string) => date => timestramp (int)
+    newTimestamp = new Date((simulation.date + oldTimestamp - simulation.start)*1000).getTime() / 1000
+    newLog[0] = newTimestamp.toString()
+    return newLog
+  })
+  console.log(newLogs)
+  const response = await tvRoutineController.setLog(logs, new Date(simulation.date*1000)) // TODO: CHANGE
+  console.log(response)
+}
+exports.dailyLogsSimulation = dailyLogsSimulation
 
 function dailyLogs(time) {
   cron.schedule(`0 0 * * *`, async () => {
@@ -50,3 +73,7 @@ async function teste() {
   console.log(response)
 }
 exports.teste = teste
+
+async function main() {
+
+}
