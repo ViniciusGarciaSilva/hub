@@ -10,8 +10,8 @@ var router = express1.default.Router()
 var simulationController = require('../controller/simulation.controller.js')
 
 router.post('/read', simulationController.read);
-router.post('/set', simulationController.set);
 router.post('/erase', simulationController.erase);
-//router.post('/read', simulationController.);
+router.post('/start', simulationController.start);
+router.post('/finish', simulationController.finish);
 
 module.exports = router

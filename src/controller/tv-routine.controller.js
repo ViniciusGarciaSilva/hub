@@ -15,9 +15,14 @@ async function checkRoutine(date) {
 }
 exports.checkRoutine = checkRoutine
 
-async function setLog(log, date) {
-  const period = parseDate(date)
-  console.log(log)
+async function setLog(log, date, start, finish) {
+  let period
+  if (date) {
+    period = parseDate(date)
+  }
+  if (start && finish) {
+    period = start.toString() + ',' + finish.toString()
+  }
   const cleanLog = log.length > 0 ? clearLog(log) : []
   const data = period + cleanLog
   try {
@@ -47,7 +52,6 @@ function parseDate(date) {
 }
 
 function clearLog(log) {
-  console.log(log)
-  let cleanLog = log.replace(/ /g, ",")
-  return cleanLog
+  // let cleanLog = log.replace(/ /g, ",")
+  return log
 }

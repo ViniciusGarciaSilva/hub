@@ -9,25 +9,37 @@ async function read(req, res, next) {
 }
 exports.read = read;
 
-async function set(req, res, next) {
+async function start(req, res, next) {
   const response = [];
   const input = req.body;
   if (input.start) {
     response[response.length] = await simulationData.setStart(input.start)
   }
-  if (input.finish) {
-    response[response.length] = await simulationData.setFinish(input.finish)
-  }
   if (input.date) {
     response[response.length] = await simulationData.setDate(input.date)
   }
   console.log(response)
-  tvModule.dailyLogsSimulation()
   res.status(200).send({
     response
   });
 }
-exports.set = set;
+exports.start = start;
+
+async function finish(req, res, next) {
+  const input = req.body;
+  if (input.finish) {
+    const response = await simulationData.setFinish(input.finish)
+    tvModule.dailyLogsSimulation()
+    res.status(200).send({
+      response
+    });
+  } else {
+    res.status(400).send(
+      'Missing finish !'
+    );
+  }
+}
+exports.finish = finish
 
 async function erase(req, res, next) {
   const response = await simulationData.erase();
