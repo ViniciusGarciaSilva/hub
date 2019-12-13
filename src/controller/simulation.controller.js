@@ -1,50 +1,43 @@
 const simulationData = require('../data/simulation.data')
-const tvModule = require('../modules/tv.module')
+const tvRoutineController = require('./tv-routine.controller')
+const irModuleController = require('./ir-module.controller')
 
-async function read(req, res, next) {
-  const response = simulationData.read() 
-  res.status(200).send(
-    response
-  );
-}
-exports.read = read;
-
-async function start(req, res, next) {
-  const response = [];
-  const input = req.body;
-  if (input.start) {
-    response[response.length] = await simulationData.setStart(input.start)
-  }
-  if (input.date) {
-    response[response.length] = await simulationData.setDate(input.date)
-  }
-  console.log(response)
-  res.status(200).send({
-    response
-  });
-}
-exports.start = start;
-
-async function finish(req, res, next) {
-  const input = req.body;
-  if (input.finish) {
-    const response = await simulationData.setFinish(input.finish)
-    tvModule.dailyLogsSimulation()
-    res.status(200).send({
+async function simulate(req, res, status) {
+  const data = req.body
+  const start = new Date(data.start)
+  const finish = new Date(data.finish)
+  const date = new Date(data.date)
+  const fakeStart = new Date(date)
+  const fakeFinish = new Date(finish.getTime() - (start.getTime() - date.getTime()))
+  const logs = await irModuleController.getLog(date)
+  try {
+    const newLogs = await transform(start, finish, date, logs)
+    const response = await tvRoutineController.setLog(newLogs, fakeStart, fakeFinish)
+    console.log(response)
+    res.status(200).send(
       response
-    });
-  } else {
-    res.status(400).send(
-      'Missing finish !'
-    );
+    )
+  }
+  catch (error) {
+    console.log(error)
+    res.status(400).send({
+      status: 'Erro na simulação',
+      error: error.message
+    })
   }
 }
-exports.finish = finish
+exports.simulate = simulate
 
-async function erase(req, res, next) {
-  const response = await simulationData.erase();
-  res.status(200).send({
-    response
-  })
+async function transform(start, finish, date, logs) {
+  const logsCSV = toCSV(logs)
+  const data = start + ',' + finish + '\n' + date + '\n' + logsCSV
+  const newData = await simulationData.transform(data)
+  return newData
 }
-exports.erase = erase
+exports.transform = transform
+
+function toCSV(log) {
+  let cleanLog = log.replace(/ /g, ",")
+  return cleanLog
+}
+

@@ -1,17 +1,20 @@
 const irModuleController = require('../controller/ir-module.controller')
 const tvRoutineController = require('../controller/tv-routine.controller')
-const simulationData = require('../data/simulation.data')
+const simulationControlller = require('../controller/simulation.controller')
 const cron = require("node-cron")
 
 let todayRoutine = []
 
 async function dailyLogsSimulation() {
-  const simulation = await simulationData.read()
-  let start = new Date( simulation.start  * 1000)
-  let finish = new Date(simulation.finish * 1000)
-  let date = new Date(simulation.date * 1000)
+  const simulation = await simulationControlller.read()
+  const start = new Date(simulation.start)
+  const finish = new Date(simulation.finish)
+  const date = new Date(simulation.date)
+  const fakeStart = new Date(date)
+  const fakeFinish = new Date(finish.getTime() - (start.getTime() - date.getTime()))
   const logs = await irModuleController.getLog(new Date())
-  const response = await tvRoutineController.setLogSimulation(logs, start, finish, date)
+  const newLogs = await simulationControlller.transform(start, finish, date, logs)
+  const response = await tvRoutineController.setLog(newLogs, fakeStart, fakeFinish)
   console.log(response)
 }
 exports.dailyLogsSimulation = dailyLogsSimulation
