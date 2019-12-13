@@ -6,7 +6,7 @@ async function get(date) {
   try {
     // const response = await axios.get(`http://192.168.1.70/log/${date}.txt`)
     // return response.data
-    console.log(logsMock)
+    console.log('AQUI', logsMock)
     return logsMock
     
   }
@@ -28,6 +28,18 @@ async function set(link) {
 exports.set = set
 
 const logsMock = 
+'1575855660 IRRX 3772793023\n' +
+'1575855661 IRRX 3782893727\n' +
+'1575855662 IRRX 3782893727\n' +
+'1575855663 IRRX 3782893727\n' +
+'1575855730 IRRX 3772793023\n' +
+'1575855780 IRRX 3772793023\n' +
+'1575855781 IRRX 3782893727\n' +
+'1575855782 IRRX 3782893727\n' +
+'1575855783 IRRX 3782893727\n' +
+'1575855810 IRRX 3772793023';
+ 
+const logsMock2 = 
 '1569628947 IRRX 3772793023\n'+
 '1569628970 RFRX 11476633\n'+
 '1569628973 RFRX 11476633\n'+

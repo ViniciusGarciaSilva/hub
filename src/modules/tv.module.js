@@ -1,35 +1,17 @@
 const irModuleController = require('../controller/ir-module.controller')
 const tvRoutineController = require('../controller/tv-routine.controller')
 const simulationData = require('../data/simulation.data')
-const simulationMock = require('../simulation.test');
 const cron = require("node-cron")
-const papa = require('papaparse')
 
 let todayRoutine = []
 
 async function dailyLogsSimulation() {
   const simulation = await simulationData.read()
-  let start = new Date(simulation.start * 1000)
+  let start = new Date( simulation.start  * 1000)
   let finish = new Date(simulation.finish * 1000)
-  if (start.getTimezoneOffset() === 120) {
-    start.setHours(start.getHours() - 1)
-  }
-  if (finish.getTimezoneOffset() === 120) {
-    finish.setHours(finish.getHours() - 1)
-  }
-  console.log(start, finish)
-  let logs = simulationMock.logs
-  // const logs = simulation.date ? await irModuleController.getLog(simulation.date) : [] 
-  const logsParsed = papa.parse(logs).data
-  const newLogs = logsParsed.map(log => {
-    let newLog = log
-    oldTimestamp = new Date(log[0]*1000).getTime() / 1000; // timestamp(string) => date => timestramp (int)
-    newTimestamp = new Date((simulation.date + oldTimestamp - simulation.start)*1000).getTime() / 1000
-    newLog[0] = newTimestamp.toString()
-    return newLog
-  })
-
-  const response = await tvRoutineController.setLog(newLogs, null, start, finish) // TODO: CHANGE
+  let date = new Date(simulation.date * 1000)
+  const logs = await irModuleController.getLog(new Date())
+  const response = await tvRoutineController.setLogSimulation(logs, start, finish, date)
   console.log(response)
 }
 exports.dailyLogsSimulation = dailyLogsSimulation
@@ -60,13 +42,13 @@ exports.checkRoutine = checkRoutine
 
 async function setTodayRoutine(dateString) {
   const date = new Date(dateString)
-  if (date.getTimezoneOffset() === 120) { // SUMMER TIME
-    date.setHours(date.getHours() - 1)
-  }
+  // if (date.getTimezoneOffset() === 120) { // SUMMER TIME
+  //   date.setHours(date.getHours() - 1)
+  // }
   const now = new Date()
-  if (date.getTimezoneOffset() === 120) { // SUMMER TIME
-    now.setHours(now.getHours() - 1)
-  }
+  // if (date.getTimezoneOffset() === 120) { // SUMMER TIME
+  //  now.setHours(now.getHours() - 1)
+  // }
   const millisTill = date.getTime() - now.getTime()
   console.log(millisTill)
   if(millisTill>0) {

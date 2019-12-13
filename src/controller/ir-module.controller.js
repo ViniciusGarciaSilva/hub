@@ -23,11 +23,11 @@ exports.sendCommand = sendCommand
 async function getLog(date) {
   const parsedDate = dateParse(date)
   try {
-    const response = await irModule.get(parsedDate)
+    const response = await irModuleData.get(parsedDate)
     return response
   }
-  catch {
-    console.log(response)
+  catch (err) {
+    console.log(err)
     return []
   }
 }

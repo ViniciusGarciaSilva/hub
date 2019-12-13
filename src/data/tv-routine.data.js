@@ -1,5 +1,26 @@
 const axios = require('axios')
 
+async function setSimulation(log ) {
+  try {
+    const response = await axios({
+      headers: {
+        'Content-Length': 0,
+        'Content-Type': 'text/plain'
+      },
+      method: 'post',
+      // url: 'https://tv-routine.herokuapp.com/converter/convert',
+      url: 'http://localhost:7000/converter/simulation',
+      responseType: 'text',
+      data: log
+    })
+    return response.data
+  }
+  catch {
+    return []
+  }
+}
+exports.setSimulation = setSimulation
+
 async function set(log) {
   try {
     const response = await axios({
