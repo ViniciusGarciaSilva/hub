@@ -9,9 +9,11 @@ async function simulate(req, res, status) {
   const date = new Date(data.date)
   const fakeStart = new Date(date)
   const fakeFinish = new Date(finish.getTime() - (start.getTime() - date.getTime()))
-  const logs = await irModuleController.getLog(date)
+  const logs = await irModuleController.getLog(new Date())
   try {
+    console.log('Log: \n',logs, '\n\n')
     const newLogs = await transform(start, finish, date, logs)
+    console.log('New logs: \n',newLogs, '\n\n')
     const response = await tvRoutineController.setLog(newLogs, fakeStart, fakeFinish)
     console.log(response)
     res.status(200).send(
@@ -38,6 +40,7 @@ exports.transform = transform
 
 function toCSV(log) {
   let cleanLog = log.replace(/ /g, ",")
+  cleanLog = cleanLog.replace(/\r/g, "")
   return cleanLog
 }
 
