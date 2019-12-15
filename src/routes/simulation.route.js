@@ -10,5 +10,6 @@ var router = express1.default.Router()
 var simulationController = require('../controller/simulation.controller.js')
 
 router.post('/simulate', simulationController.simulate);
+router.post('/routine', simulationController.routine)
 
 module.exports = router

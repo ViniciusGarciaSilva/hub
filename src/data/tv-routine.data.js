@@ -26,10 +26,10 @@ async function get(period) {
   try {
     // const response = await axios('https://tv-routine.herokuapp.com/routine', {period: period})
     const response = await axios.post(`http://localhost:7000/routine`, {period: period}) // TODO: change to remote server
-    return response.data
+    return response.data.data
   }
-  catch {
-    return []
+  catch (error) {
+    throw new Error(error.message)
   }
 }
 exports.get = get

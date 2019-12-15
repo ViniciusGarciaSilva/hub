@@ -1,16 +1,15 @@
 const tvRoutineData = require('../data/tv-routine.data')
 const fs = require("fs")
 
-async function checkRoutine(date) {
-  const period = parseDate(date)
+async function checkRoutine(start, finish) {
+  const period = start.toString() + ',' + finish.toString()
   try {
     const routine = await tvRoutineData.get(period)
     routine.filter(element => element.channel !== 0)
     return routine
   }
-  catch {
-    console.log(routine)
-    return []
+  catch (error) {
+    throw new Error(error.message)
   }
 }
 exports.checkRoutine = checkRoutine

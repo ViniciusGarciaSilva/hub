@@ -2,6 +2,44 @@ const simulationData = require('../data/simulation.data')
 const tvRoutineController = require('./tv-routine.controller')
 const irModuleController = require('./ir-module.controller')
 
+async function routineAutomation (date) {
+  const now = new Date()
+  console.log('Setting automation to: ', date)
+  setTimeout( () => {
+    console.log('\n\n ********LIGAR TV? ******** \n\n')
+  }, date.getTime() - now.getTime())
+  return null
+}
+
+async function routine(req, res, status) {
+  const start = new Date(req.body.start)
+  const finish = new Date(start.getFullYear(), start.getMonth(), start.getDate(), start.getHours(), start.getMinutes() + 2, start.getSeconds())
+  try {
+    const routine = await tvRoutineController.checkRoutine(start, finish)
+    console.log(routine)
+    for (let i = 0 ; i < routine.length ; i++) {
+      const now = new Date()
+      const routineDate = new Date(routine[i].date)
+      const interval = routineDate.getTime() - start.getTime()
+      const date = new Date(now.getTime() + interval)
+      routineAutomation(date)
+    }
+    res.status(200).send(
+      routine
+    )
+    return 
+  }
+  catch (error) {
+    console.log({status: 'Erro na análise de rotina', error: error.message})
+    res.status(400).send({
+      status: 'Erro na análise de rotina',
+      error: error.message
+    })
+    return 
+  }
+}
+exports.routine = routine
+
 async function simulate(req, res, status) {
   const data = req.body
   const start = new Date(data.start)
