@@ -112,7 +112,7 @@ function activateStockDialog(index) {
         id: null, name: null, weekday: null, box: `${index}`, timeOfDay: null, alertLevel: null, criticality: null
     })
     // TODO ver se eh isso mesmo
-    speaker.conversationeToSpeaker('Desejo inserir um novo remédio')
+    speaker.conversationToSpeaker('Desejo inserir um novo remédio')
     console.log('Inicio conversa')
 }
 

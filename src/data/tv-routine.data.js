@@ -8,8 +8,8 @@ async function set(log) {
         'Content-Type': 'text/plain'
       },
       method: 'post',
-      // url: 'https://tv-routine.herokuapp.com/converter/IA',
-      url: 'http://localhost:5000/converter/IA',
+      // url: 'https://tv-routine.herokuapp.com/converter/convert',
+      url: 'http://localhost:7000/converter/convert',
       responseType: 'text',
       data: log,
     })
@@ -25,12 +25,11 @@ exports.set = set
 async function get(period) {
   try {
     // const response = await axios('https://tv-routine.herokuapp.com/routine', {period: period})
-    const response = await axios.post(`http://localhost:5000/routine`, {period: period}) // TODO: change to remote server
-    return response.data
+    const response = await axios.post(`http://localhost:7000/routine`, {period: period}) // TODO: change to remote server
+    return response.data.data
   }
-  catch {
-    return []
+  catch (error) {
+    throw new Error(error.message)
   }
-  
 }
 exports.get = get

@@ -14,6 +14,7 @@ app.use(bodyParser.default.json({limit: '50mb'}))
 app.use('/', require('./routes/index.route'))
 app.use('/medicine', require('./routes/medicine.route'))
 app.use('/tv', require('./routes/tv.route'))
+app.use('/simulation', require('./routes/simulation.route'))
 
 const tvModule = require('./modules/tv.module')
 const medicineModule = require('./modules/medicine.module')

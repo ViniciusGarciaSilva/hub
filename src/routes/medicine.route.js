@@ -12,7 +12,7 @@ const medicineJobController = require('../controller/medicine-job.controller')
 
 //router.put('/attribute', boxController.updateAttributeLocalLogs)
 router.post('/', boxController.setLocalLogs);
-router.get('/', boxController.readLocalLogs);
+router.get('/', boxController.readLocalLogsRequest);
 router.put('/', boxController.updateLocalLogs);
 router.delete('/', boxController.deleteLocalLogs);
 router.post('/renew', medicineJobController.cancelJobKill);
