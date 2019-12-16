@@ -16,7 +16,8 @@ async function routineAutomation (date, channel) {
 
 async function routine(req, res, status) {
   console.log('\nIniciando análise de rotina')
-  const start = new Date(req.body.start)
+  console.log(req.body)
+  const start = new Date(req.body.date)
   const finish = new Date(start.getFullYear(), start.getMonth(), start.getDate(), start.getHours(), start.getMinutes() + 2, start.getSeconds())
   try {
     const routine = await tvRoutineController.checkRoutine(start, finish)
@@ -46,6 +47,7 @@ exports.routine = routine
 
 async function simulate(req, res, status) {
   console.log('\nIniciando simulação')
+  console.log(req.body)
   const data = req.body
   const start = new Date(data.start)
   const finish = new Date(data.finish)

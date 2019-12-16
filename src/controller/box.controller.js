@@ -19,6 +19,18 @@ async function readLocalLogs() {
 }
 exports.readLocalLogs = readLocalLogs
 
+async function readLocalLogsRequest(req, res, next) {
+  try {
+    const logs = await localLogsData.read()
+    res.status(200).send(logs)
+  }
+  catch (err) {
+    console.log(err)
+    return []
+  }
+}
+exports.readLocalLogsRequest = readLocalLogsRequest
+
 async function setLocalLogs(req, res, next) {
   let dose = req.body
   console.log('dose: ', dose)

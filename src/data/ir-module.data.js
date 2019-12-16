@@ -4,7 +4,7 @@ const commands = require('../model/commands.model')
 
 async function get(date) {
   try {
-    const response = await axios.get(`http://192.168.1.70/log/${date}.txt`)
+    const response = await axios.get(`http://192.168.43.70/log/${date}.txt`)
     return response.data
     // return logsMock
   }

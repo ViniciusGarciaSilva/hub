@@ -6,11 +6,11 @@ const localLogs = './src/teste-local-logs.json'
 async function getSensor() {
   try {
     
-    const bla = await jsonfile.readFile(localLogs)
+    //const bla = await jsonfile.readFile(localLogs)
     //console.log(bla)
-    return bla.bla
-    //const response = await axios.get(`http://192.168.43.184/json?fields=sensor`)
-    //return response.data.sensor
+    //return bla.bla
+    const response = await axios.get(`http://192.168.43.184/json?fields=sensor`)
+    return response.data.sensor
   }
   catch {
     console.log('erro no request')
@@ -22,7 +22,7 @@ exports.getSensor = getSensor
 async function setSignal(signal, value) {
   console.log(signal, value)
   try {
-    const response = await axios.get(`http://192.168.43.184/?r${signal}=${value}&fields=rele`)
+    const response = await axios.get(`http://192.168.43.70/?r${signal}=${value}&fields=rele`)
     return response.data.rele
   }
   catch {
