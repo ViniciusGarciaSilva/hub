@@ -1,17 +1,21 @@
 const simulationData = require('../data/simulation.data')
 const tvRoutineController = require('./tv-routine.controller')
 const irModuleController = require('./ir-module.controller')
+const speakerData = require('../data/speaker.data')
 
-async function routineAutomation (date) {
+async function routineAutomation (date, channel) {
   const now = new Date()
   console.log('Setting automation to: ', date)
   setTimeout( () => {
     console.log('\n\n ********LIGAR TV? ******** \n\n')
+    console.log('Iniciar rotina da tv no canal ' + channel)
+    speakerData.conversationToSpeaker('Iniciar rotina da tv no canal ' + channel)
   }, date.getTime() - now.getTime())
   return null
 }
 
 async function routine(req, res, status) {
+  console.log('\nIniciando análise de rotina')
   const start = new Date(req.body.start)
   const finish = new Date(start.getFullYear(), start.getMonth(), start.getDate(), start.getHours(), start.getMinutes() + 2, start.getSeconds())
   try {
@@ -22,7 +26,7 @@ async function routine(req, res, status) {
       const routineDate = new Date(routine[i].date)
       const interval = routineDate.getTime() - start.getTime()
       const date = new Date(now.getTime() + interval)
-      routineAutomation(date)
+      routineAutomation(date, routine[i].ch)
     }
     res.status(200).send(
       routine
@@ -41,6 +45,7 @@ async function routine(req, res, status) {
 exports.routine = routine
 
 async function simulate(req, res, status) {
+  console.log('\nIniciando simulação')
   const data = req.body
   const start = new Date(data.start)
   const finish = new Date(data.finish)
