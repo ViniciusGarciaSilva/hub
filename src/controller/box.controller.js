@@ -80,7 +80,7 @@ exports.checkSensor = checkSensor
 async function setSignal(signal, value, alert) {
   try {
     let buzzer, rele
-    if (alert==='1') {
+    if (alert==1) {
       buzzer = boxData.setSignal(7, value)
     }
     rele = boxData.setSignal(signal, value)

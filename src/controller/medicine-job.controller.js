@@ -4,23 +4,52 @@ const moment = require('moment')
 const speaker = require('../data/speaker.data')
 const boxController = require('./box.controller')
 
-const RESTOCK_TIMEOUT = 2
+const RESTOCK_TIMEOUT = 1
 
 const sensorLog = [2, 2, 2, 2, 2, 2, 2, 2]
 const alerts = []
+
+const alertDelay = [[0,0,0],[1,1,1],[15,15,5]]
 
 const jobs = []
 const jobKiller = []
 
 async function createAlert(event) {
-    const time = event.timeOfDay.split(":")
-    console.log('setting cron job: ', time[0], time[1])
-    const job = cron.schedule(`${time[1]} ${time[0]} * * ${event.weekday}`, async () => {
-        rele = await boxController.setSignal(event.box, 2, event.alertLevel)
-        alerts.push({ box: event.box, level: event.alertLevel })
+    const time = moment(event.timeOfDay, 'H:m:s')
+    console.log('setting cron job: ', time.hour(), time.minute())
+    jobs[event.id] = []
+    jobs[event.id][0] = cron.schedule(`${time.minute()} ${time.hour()} * * ${event.weekday}`, async () => {
+        rele = await boxController.setSignal(event.box, 2, 0)
+        alerts.push({ box: event.box, level: 0 })
         console.log(event, rele)
     }, { timezone: "America/Sao_Paulo" })
-    jobs[event.id] = job
+    if(event.alertLevel > 0){
+        time.add(alertDelay[event.alertLevel][0],'m')
+        jobs[event.id][1] = cron.schedule(`${time.minute()} ${time.hour()} * * ${event.weekday}`, async () => {
+            rele = await boxController.setSignal(event.box, 2, 1)
+            alerts.push({ box: event.box, level: 1 })
+            console.log(event, rele)
+        }, { timezone: "America/Sao_Paulo" })
+        time.add(alertDelay[event.alertLevel][1],'m')
+        jobs[event.id][2] = cron.schedule(`${time.minute()} ${time.hour()} * * ${event.weekday}`, async () => {
+            speaker.messageToSpeaker('Está na hora de tomar seu remédio')
+            alerts.push({ box: event.box, level: 2 })
+            time.add(alertDelay[event.alertLevel][2],'m')
+            jobs[event.id][3] = cron.schedule(`${time.minute()} ${time.hour()} * * ${event.weekday}`, async () => {
+                alerts.forEach(async alert => {
+                    if (alert.box == event.box) {
+                        console.log('achou alerta')
+                        if(alert.level < 2 ){
+                            await boxController.setSignal(event.box, '1', alert.level)
+                        }
+                        console.log(event.box, '1',alert.level)
+                        alerts.splice(event.box,1)
+                    }
+                })
+            })
+            console.log('speaker alarm')
+        }, { timezone: "America/Sao_Paulo" })
+    }
 }
 exports.createAlert = createAlert
 
@@ -42,13 +71,16 @@ const checkSensor = (logs) => async (sensor, index) => {
         if (sensor == '2') {
             console.log('abertura')
             let log = logs.find(log => log.box == index)
-            let alert = alerts.find(alert => alert.box == index)
-            if (alert) {
-                console.log('achou alerta')
-                //await boxController.setSignal(index, '1', alert.level)
-                console.log(index, '1',alert.level)
-                alerts.splice(index,1)
-            }
+            alerts.forEach(async alert => {
+                if (alert.box == index) {
+                    console.log('achou alerta')
+                    if(alert.level < 2 ){
+                        await boxController.setSignal(index, '1', alert.level)
+                    }
+                    console.log(index, '1',alert.level)
+                    alerts.splice(index,1)
+                }
+            })
             if (!log) {
                 //Ativar daiarogufurou
                 activateStockDialog(index)
@@ -58,9 +90,12 @@ const checkSensor = (logs) => async (sensor, index) => {
                 console.log(intendedTime.format('H:m:s-d'))
                 if(intendedTime.isAfter(moment().add(10,'m')) || intendedTime.day() != log.weekday){
                     console.log('Ainda não está na hora do seu medicamento')
+                    speaker.messageToSpeaker('Ainda não está na hora do seu medicamento')
                     // TODO: do something to ask if this is correct
                 } else {
                     console.log('Deseja inserir novo medicamento?')
+                    // TODO ver se eh isso mesmo
+                    speaker.conversationToSpeaker('Desejo renovar medicamento?')
                     setJobKill(log)
                 }
             }
@@ -76,28 +111,36 @@ function activateStockDialog(index) {
     unfinishedRemedies.push({
         id: null, name: null, weekday: null, box: `${index}`, timeOfDay: null, alertLevel: null, criticality: null
     })
+    // TODO ver se eh isso mesmo
+    speaker.conversationeToSpeaker('Desejo inserir um novo remédio')
     console.log('Inicio conversa')
 }
 
 function setJobKill(log) {
     const now = moment().add(RESTOCK_TIMEOUT, 'm')
+    if(jobs[log.id][3]){
+        jobs[log.id].pop().destroy()
+    }
+    jobs[log.id].forEach(stoppedJob=> stoppedJob.stop())
     console.log(now.minute(), now.hour())
     const job = cron.schedule(`${now.minute()} ${now.hour()} * * *`, async () => {
         // TODO: checar se o remedio ja foi tomado 
         console.log('jobs ' + log.id + ': ' + jobs[log.id])
         await localLogsData.erase(log)
-        if (jobs[log.id]) {
-            jobs.splice(log.id,1)[0].stop()
+        if (jobs[log.id] && jobs.length > 0) {
+            jobs.splice(log.id,1)[0].forEach(destroyedJob=> destroyedJob.destroy())
         }
-        jobKiller.shift().stop()
+        jobKiller.shift().job.destroy()
         console.log(jobKiller)
         console.log('jobs ' + log.id + ': ' + jobs[log.id])
     }, { timezone: "America/Sao_Paulo" })
-    jobKiller.push(job)
+    jobKiller.push({job, id:log.id})
 }
 
 function cancelJobKill(req, res, next) {
-    jobKiller.shift().stop()
+    const killer = jobKiller.shift()
+    killer.job.destroy()
+    jobs[killer.id].forEach(stoppedJob=> stoppedJob.start())
     res.status(200).send('Success!');
 }
 exports.cancelJobKill = cancelJobKill

@@ -20,6 +20,7 @@ async function getSensor() {
 exports.getSensor = getSensor
 
 async function setSignal(signal, value) {
+  console.log(signal, value)
   try {
     const response = await axios.get(`http://192.168.43.184/?r${signal}=${value}&fields=rele`)
     return response.data.rele
